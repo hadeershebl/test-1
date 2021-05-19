@@ -55,9 +55,9 @@ class SessionsController extends Controller
         // Generates token for client as a publisher that lasts for one week
 
         if ($user->id == $virtualClass->user_id) {
-            $token = $opentok->generateToken($sessionId, ['role' => Role::MODERATOR, 'expireTime' => time() + (7 * 24 * 60 * 60)]);
+            $token = $opentok->generateToken($sessionId, ['role' => Role::PUBLISHER, 'expireTime' => time() + (7 * 24 * 60 * 60)]);
         } else {
-            $token = $opentok->generateToken($sessionId, ['role' => Role::SUBSCRIBER, 'expireTime' => time() + (7 * 24 * 60 * 60)]);
+            $token = $opentok->generateToken($sessionId, ['role' => Role::PUBLISHER, 'expireTime' => time() + (7 * 24 * 60 * 60)]);
         }
 
         // Open the classroom with all needed info for clients to connect
