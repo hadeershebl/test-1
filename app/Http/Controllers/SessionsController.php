@@ -29,10 +29,11 @@ class SessionsController extends Controller
         $opentok = new OpenTok('47231534', '35b85a682be015b96a98206bfe7203a35a18bb90');
         // Creates a new session (Stored in the Vonage API cloud)
         $session = $opentok->createSession(array('mediaMode' => MediaMode::ROUTED));
+
         // Create a new virtual class that would be stored in db
         $class = new VirtualClass();
         // Generate a name based on the name the teacher entered
-        $class->name = $user->name . "'s " . $request->input("name") . " class";
+        $class->name = $user->name . "'s (" . $request->input("name") . " ) class";
         // Store the unique ID of the session
         $class->session_id = $session->getSessionId();
         // Save this class as a relationship to the teacher
@@ -52,7 +53,13 @@ class SessionsController extends Controller
         // Instantiates new OpenTok object
         $opentok = new OpenTok('47231534', '35b85a682be015b96a98206bfe7203a35a18bb90');
         // Generates token for client as a publisher that lasts for one week
-        $token = $opentok->generateToken($sessionId, ['role' => Role::PUBLISHER, 'expireTime' => time() + (7 * 24 * 60 * 60)]);
+
+        if ($user->id == $virtualClass->user_id) {
+            $token = $opentok->generateToken($sessionId, ['role' => Role::MODERATOR, 'expireTime' => time() + (7 * 24 * 60 * 60)]);
+        } else {
+            $token = $opentok->generateToken($sessionId, ['role' => Role::SUBSCRIBER, 'expireTime' => time() + (7 * 24 * 60 * 60)]);
+        }
+
         // Open the classroom with all needed info for clients to connect
         return view('classroom', compact('token', 'user', 'sessionId'));
     }
